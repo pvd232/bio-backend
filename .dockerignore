@@ -1,0 +1,13 @@
+Dockerfile
+README.md
+**.pyc
+**.pyo
+**.pyd
+**__pycache__
+***.pytest_cache
+**node_modules
+**build
+**venv
+**postman
+**tests
+**.DS_Store
