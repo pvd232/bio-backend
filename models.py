@@ -60,6 +60,12 @@ class User_Model(BaseModel):
     password = db.Column(db.String(80), nullable=False)
 
 
+class Admin_Model(BaseModel):
+    __tablename__ = "admin"
+    id = db.Column(db.String(100), primary_key=True, unique=True, nullable=False)
+    password = db.Column(db.String(80), nullable=False)
+
+
 class Question_Option_Model(BaseModel):
     __tablename__ = "question_option"
     id = db.Column(db.Integer(), primary_key=True, unique=True, nullable=False)
@@ -87,6 +93,9 @@ class Question_Response_Model(BaseModel):
     __tablename__ = "question_response"
     id = db.Column(UUID(as_uuid=True), primary_key=True, unique=True, nullable=False)
     user_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False)
+    questionnaire_id = db.Column(
+        db.Integer(), db.ForeignKey("questionnaire.id"), nullable=False
+    )
     question_id = db.Column(db.Integer(), db.ForeignKey("question.id"), nullable=False)
     question_type = db.Column(db.String(20), nullable=False)
     option_id = db.Column(
@@ -110,7 +119,7 @@ class Questionnaire_Junction_Model(BaseModel):
         nullable=False,
     )
     priority = db.Column(db.Integer(), nullable=False)
-    question: Mapped[Question_Model] = relationship("Question_Model", lazy=True)
+    question: Mapped[Question_Model] = relationship("Question_Model", lazy="joined")
 
     def to_dict(self):
         result = super().to_dict()
@@ -118,6 +127,7 @@ class Questionnaire_Junction_Model(BaseModel):
         return result
 
 
+# One to many relationship between questionnaire and questionnaire junction
 class Questionnaire_Model(BaseModel):
     __tablename__ = "questionnaire"
     id = db.Column(db.Integer(), primary_key=True, unique=True, nullable=False)
@@ -125,7 +135,9 @@ class Questionnaire_Model(BaseModel):
     questionnaire_junction: Mapped[list[Questionnaire_Junction_Model]] = relationship(
         "Questionnaire_Junction_Model",
         lazy="joined",
-        order_by=asc(Questionnaire_Junction_Model.priority),  # Ref
+        order_by=asc(
+            Questionnaire_Junction_Model.priority
+        ),  # Order questions by priority
     )
 
     def to_dict(self):

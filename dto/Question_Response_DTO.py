@@ -1,16 +1,30 @@
-from typing import TYPE_CHECKING
 from .Base_DTO import Base_DTO
-
-if TYPE_CHECKING:
-    from domain.Question_Domain import Question_Domain
-    from dto.Question_Option_DTO import Question_Option_DTO
+from models import Question_Response_Model
+from typing import Optional
 
 
+# Data transfer object for Question Response, used to un-flatten the data in a way the client can understand
 class Question_Response_DTO(Base_DTO):
-    def __init__(self, json: dict) -> None:
-        self.user_id: int = json["user_id"]
-        self.question_id: int = json["question_id"]
-        self.type: str = json["question_type"]
-        self.multi_option_ids: list[int] = []
-        self.single_option_id: int = None
-        self.short_answer: str = json["short_answer"]
+    def __init__(self, model: Question_Response_Model) -> None:
+        self.question_id: int = model.question_id
+        self.type: str = model.question_type
+        self.questionnaire_id = model.questionnaire_id
+        self.user_id = model.user_id
+        self.single_option_id: Optional[int] = None
+        self.short_answer: Optional[str] = None
+        self.multi_option_ids: Optional[list[int]] = None
+
+        if self.type == "mcq":
+            self.single_option_id = model.option_id
+
+        elif self.type == "input":
+            self.short_answer = model.short_answer
+
+        else:
+            self.multi_option_ids = [model.option_id]
+
+    def add_option_id(self, option_id: int):
+        self.multi_option_ids.append(option_id)
+
+    def serialize(self) -> dict:
+        return super().serialize()

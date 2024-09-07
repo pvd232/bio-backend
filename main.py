@@ -61,14 +61,12 @@ def login() -> Response:
 @app.route("/api/questionnaire_junction", methods=["GET"])
 def get_questionnaire_junction() -> Response:
     from models import Questionnaire_Model
-    from dto.Questionnaire_Compressed_DTO import Questionnaire_Compressed_DTO
+    from dto.Questionnaire_DTO import Questionnaire_DTO
 
-    questionnaire_junctions = db.session.query(Questionnaire_Model).all()
+    questionnaires = db.session.query(Questionnaire_Model)
 
     # Convert to a list of dictionaries
-    result_list = [
-        Questionnaire_Compressed_DTO(x).serialize() for x in questionnaire_junctions
-    ]
+    result_list = [Questionnaire_DTO(x).serialize() for x in questionnaires]
 
     return jsonify(result_list)
 
@@ -84,9 +82,8 @@ def post_question_response() -> Response:
 
     # List to hold the created Question_Response_Model objects
     responses = []
-    print("data", data)
     for item in data:
-        if item["multiOptionIds"] != None:
+        if item["type"] == "mcq_multi":
             for option_id in item["multiOptionIds"]:
                 try:
                     # Validate and parse each item in the array
@@ -94,6 +91,7 @@ def post_question_response() -> Response:
                         id=uuid4(),
                         user_id=item["userId"],
                         question_type=item["type"],
+                        questionnaire_id=item["questionnaireId"],
                         question_id=item["questionId"],
                         option_id=option_id,
                         short_answer=item["shortAnswer"],
@@ -108,6 +106,7 @@ def post_question_response() -> Response:
                     id=uuid4(),
                     user_id=item["userId"],
                     question_type=item["type"],
+                    questionnaire_id=item["questionnaireId"],
                     question_id=item["questionId"],
                     option_id=item["singleOptionId"],
                     short_answer=item["shortAnswer"],
@@ -131,39 +130,25 @@ def post_question_response() -> Response:
     return jsonify({"message": "Question responses saved successfully"}), 201
 
 
-@app.route("/api/question_response/<string:id>", methods=["GET"])
-def get_question_response(id) -> Response:
-    from models import Question_Response_Model
+@app.route("/api/question_response/<string:user_id>", methods=["GET"])
+def get_question_response(user_id: str) -> Response:
+    from service.Question_Response_Service import Question_Response_Service
     from dto.Question_Response_DTO import Question_Response_DTO
 
-    question_responses = (
-        db.session.query(Question_Response_Model)
-        .filter(Question_Response_Model.user_id == id)
-        .all()
+    response_dtos: list[Question_Response_DTO] = (
+        Question_Response_Service().get_question_responses(user_id=user_id, db=db)
     )
+    return jsonify([x.serialize() for x in response_dtos])
 
-    filtered_responses: list[Question_Response_Model] = []
-    question_dict = {}
-    for response in question_responses:
-        if response.question_type == "mcq_multi":
-            # If the question is a multi-option question, we need to group the option_ids by question_id
-            if response.question_id not in question_dict:
-                question_dict[response.question_id] = []  # Initialize the list
-                filtered_responses.append(response)  # Add the response to the list
-            # Append the option_id to the list regardless of whether the question_id is already in the dictionary
-            question_dict[response.question_id].append(response.option_id)
-        else:
-            filtered_responses.append(response)
 
-    # Convert to a list of dictionaries
-    result_list = [Question_Response_DTO(json=x.to_dict()) for x in filtered_responses]
+@app.route("/api/response_stats", methods=["GET"])
+def response_stats() -> Response:
+    from service.Response_Stats_Service import Response_Stats_Service
 
-    # Add the multi_option_ids to the Question_Response_DTO objects
-    for item in result_list:
-        if item.question_id in question_dict:
-            item.multi_option_ids = question_dict[item.question_id]
-
-    return jsonify([x.serialize() for x in result_list])
+    response = [
+        x.serialize() for x in Response_Stats_Service().get_questionnaire_stats(db=db)
+    ]
+    return jsonify(response)
 
 
 if env == "debug":
