@@ -21,6 +21,8 @@ class Response_Stats_Service:
         from dto.Questionnaire_Response_DTO import Questionnaire_Response_DTO
         from dto.Question_Response_DTO import Question_Response_DTO
 
+        result: list[Question_Response_Stats_DTO] = []
+
         question_responses = (
             db.session.query(Question_Response_Model)
             .order_by(
@@ -32,7 +34,7 @@ class Response_Stats_Service:
         )
 
         if len(question_responses) == 0:
-            return
+            return result
 
         # For each user, create question response stats dto with user_id, response count and list of questionnaire response dtos
         # Each questionnaire response dto has a list of associated question response dtos
@@ -47,7 +49,6 @@ class Response_Stats_Service:
         )
         prev_q_response_dto = Question_Response_DTO(model=question_responses[0])
 
-        result: list[Question_Response_Stats_DTO] = []
         for i in range(1, len(question_responses)):
             curr_q_res = question_responses[i]
             # If user_id updates create new stats dto
