@@ -11,6 +11,8 @@ WORKDIR /app/flask-server
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip3 install --upgrade pip
 RUN pip3 install wheel
+RUN pip3 install -U pip setuptools 
+
 # Install grpcio (gcc, g++, linux-headers) psycopg2 (musl-dev postgresql-libs postgresql-dev) dependencies
 RUN apk update && \ 
     # postgresql-libs must be installed on the system for psycopg2 
