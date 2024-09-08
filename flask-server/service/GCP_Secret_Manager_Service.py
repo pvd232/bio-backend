@@ -1,6 +1,6 @@
 class GCP_Secret_Manager_Service(object):
     def __init__(self) -> None:
-        self.project_id = "nourish-351123"
+        self.project_id = "bioverse-435003"
 
     def get_secret_version(self, secret_id) -> str:
         """
