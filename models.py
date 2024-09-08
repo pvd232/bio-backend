@@ -58,12 +58,7 @@ class User_Model(BaseModel):
     __tablename__ = "user"
     id = db.Column(db.String(100), primary_key=True, unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-
-
-class Admin_Model(BaseModel):
-    __tablename__ = "admin"
-    id = db.Column(db.String(100), primary_key=True, unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
 
 
 class Question_Option_Model(BaseModel):
@@ -102,6 +97,11 @@ class Question_Response_Model(BaseModel):
         db.Integer(), db.ForeignKey("question_option.id"), nullable=True
     )
     short_answer = db.Column(db.String(400), nullable=True)
+
+    question: Mapped[Question_Model] = relationship("Question_Model", lazy=True)
+    option: Mapped[Question_Option_Model] = relationship(
+        "Question_Option_Model", lazy=True
+    )
 
     def to_dict(self):
         result = super().to_dict()

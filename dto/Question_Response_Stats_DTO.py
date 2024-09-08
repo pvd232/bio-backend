@@ -6,7 +6,7 @@ from dto.Questionnaire_Response_DTO import Questionnaire_Response_DTO
 class Question_Response_Stats_DTO(Base_DTO):
     def __init__(self, user_id: str, response_cnt: int) -> None:
         self.user_id: int = user_id
-        self.response_cnt = response_cnt
+        self.count = response_cnt
         self.questionnaire_responses = []
 
     def add_response(self, response: Questionnaire_Response_DTO):

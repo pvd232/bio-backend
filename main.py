@@ -49,7 +49,11 @@ def login() -> Response:
     creds = request.json
     user = (
         db.session.query(User_Model)
-        .filter(User_Model.id == creds["id"], User_Model.password == creds["password"])
+        .filter(
+            User_Model.id == creds["id"],
+            User_Model.password == creds["password"],
+            User_Model.role == creds["role"],
+        )
         .first()
     )
     if user is None:
@@ -141,12 +145,13 @@ def get_question_response(user_id: str) -> Response:
     return jsonify([x.serialize() for x in response_dtos])
 
 
-@app.route("/api/response_stats", methods=["GET"])
-def response_stats() -> Response:
-    from service.Response_Stats_Service import Response_Stats_Service
+@app.route("/api/questionnaire_stats", methods=["GET"])
+def questionnaire_stats() -> Response:
+    from service.Questionnaire_Stats_Service import Questionnaire_Stats_Service
 
     response = [
-        x.serialize() for x in Response_Stats_Service().get_questionnaire_stats(db=db)
+        x.serialize()
+        for x in Questionnaire_Stats_Service().get_questionnaire_stats(db=db)
     ]
     return jsonify(response)
 

@@ -74,11 +74,14 @@ def seed_db():
     user_ids = ["a", "b", "c"]
     user_passwords = ["a", "b", "c"]
     for i in range(len(user_ids)):
-        user = User_Model(
-            id=user_ids[i],
-            password=user_passwords[i],
-        )
+        user = User_Model(id=user_ids[i], password=user_passwords[i], role="non-admin")
         session.add(user)
+
+    admin_ids = ["d", "e", "f"]
+    admin_passwords = ["d", "e", "f"]
+    for i in range(len(admin_ids)):
+        admin = User_Model(id=admin_ids[i], password=admin_passwords[i], role="admin")
+        session.add(admin)
     # Commit the session to save everything in the database
     session.commit()
 

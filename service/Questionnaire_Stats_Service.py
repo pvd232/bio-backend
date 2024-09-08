@@ -4,7 +4,7 @@ from dto.Question_Response_Stats_DTO import Question_Response_Stats_DTO
 from models import Question_Response_Model
 
 
-class Response_Stats_Service:
+class Questionnaire_Stats_Service:
     def get_questionnaire_totals(self, db: SQLAlchemy):
         stmt = select(
             Question_Response_Model.user_id,
@@ -19,7 +19,7 @@ class Response_Stats_Service:
     ) -> list[Question_Response_Stats_DTO]:
         from dto.Question_Response_Stats_DTO import Question_Response_Stats_DTO
         from dto.Questionnaire_Response_DTO import Questionnaire_Response_DTO
-        from dto.Question_Response_DTO import Question_Response_DTO
+        from dto.Admin_Question_Response_DTO import Admin_Question_Response_DTO
 
         result: list[Question_Response_Stats_DTO] = []
 
@@ -47,7 +47,7 @@ class Response_Stats_Service:
         prev_qnaire_dto = Questionnaire_Response_DTO(
             questionnaire_id=question_responses[0].questionnaire_id
         )
-        prev_q_response_dto = Question_Response_DTO(model=question_responses[0])
+        prev_q_response_dto = Admin_Question_Response_DTO(model=question_responses[0])
 
         for i in range(1, len(question_responses)):
             curr_q_res = question_responses[i]
@@ -63,7 +63,7 @@ class Response_Stats_Service:
                 prev_qnaire_dto = Questionnaire_Response_DTO(
                     questionnaire_id=curr_q_res.questionnaire_id
                 )
-                prev_q_response_dto = Question_Response_DTO(model=curr_q_res)
+                prev_q_response_dto = Admin_Question_Response_DTO(model=curr_q_res)
 
             # If qnnaire id updates create new qnnaire dto
             elif curr_q_res.questionnaire_id != prev_qnaire_dto.questionnaire_id:
@@ -72,19 +72,21 @@ class Response_Stats_Service:
                 prev_qnaire_dto = Questionnaire_Response_DTO(
                     questionnaire_id=curr_q_res.questionnaire_id
                 )
-                prev_q_response_dto = Question_Response_DTO(model=curr_q_res)
+                prev_q_response_dto = Admin_Question_Response_DTO(model=curr_q_res)
             # If multi answer and same question then add response
             elif curr_q_res.question_type == "mcq_multi":
                 if curr_q_res.question_id == prev_q_response_dto.question_id:
-                    prev_q_response_dto.add_option_id(option_id=curr_q_res.option_id)
+                    prev_q_response_dto.add_option_text(
+                        option_text=curr_q_res.option.text
+                    )
 
                 # Otherwise add curr q response to dto and set new one
                 else:
                     prev_qnaire_dto.add_response(response=prev_q_response_dto)
-                    prev_q_response_dto = Question_Response_DTO(model=curr_q_res)
+                    prev_q_response_dto = Admin_Question_Response_DTO(model=curr_q_res)
             else:
                 prev_qnaire_dto.add_response(response=prev_q_response_dto)
-                prev_q_response_dto = Question_Response_DTO(model=curr_q_res)
+                prev_q_response_dto = Admin_Question_Response_DTO(model=curr_q_res)
 
         prev_qnaire_dto.add_response(prev_q_response_dto)
         prev_response_stats.add_response(prev_qnaire_dto)
