@@ -14,6 +14,7 @@ RUN pip3 install --upgrade pip
 RUN apk update && \ 
     # postgresql-libs must be installed on the system for psycopg2 
     apk add --no-cache postgresql-libs && \
+    apk add --no-cache libffi-de && \
     # all of these dependencies are only needed during build time for grpcio & psychopg2, hence the --virtual flag and --purge
     apk add --no-cache --virtual .build-deps postgresql-dev gcc g++ linux-headers musl-dev && \
     pip3 install -r requirements.txt --no-cache-dir && \
