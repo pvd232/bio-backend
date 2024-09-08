@@ -1,4 +1,4 @@
-FROM python:3.11-alpine
+FROM python:3.2-alpine
 WORKDIR /app
 ADD /flask-server /app/flask-server
 COPY requirements.txt /app/flask-server
@@ -10,6 +10,8 @@ RUN python3 -m venv $VIRTUAL_ENV
 WORKDIR /app/flask-server
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip3 install --upgrade pip
+RUN pip install "cython<3.0.0" wheel
+RUN pip install "pyyaml==5.4.1" --no-build-isolation
 # Install grpcio (gcc, g++, linux-headers) psycopg2 (musl-dev postgresql-libs postgresql-dev) dependencies
 RUN apk update && \ 
     # postgresql-libs must be installed on the system for psycopg2 
