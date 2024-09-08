@@ -18,13 +18,11 @@ app = Flask(__name__)
 # Env var from cloud run
 env = os.getenv("DEPLOYMENT_ENV") or "debug"
 
-db_username = os.getenv("DB_USER") or GCP_Secret_Manager_Service().get_secret("DB_USER")
-db_password = os.getenv("DB_PASSWORD") or GCP_Secret_Manager_Service().get_secret(
-    "DB_PASSWORD"
-)
-host = os.getenv("DB_HOST") or GCP_Secret_Manager_Service().get_secret("DB_HOST")
-port = os.getenv("DB_PORT") or GCP_Secret_Manager_Service().get_secret("DB_PORT")
-db_name = os.getenv("DB_NAME") or GCP_Secret_Manager_Service().get_secret("DB_NAME")
+db_username = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
 
 connection_string = get_db_connection_string(
     username=db_username,
