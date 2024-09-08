@@ -10,13 +10,13 @@ RUN python3 -m venv $VIRTUAL_ENV
 WORKDIR /app/flask-server
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip3 install --upgrade pip
-RUN pip install "cython<3.0.0" && pip install --no-build-isolation pyyaml==6.0
 # Install grpcio (gcc, g++, linux-headers) psycopg2 (musl-dev postgresql-libs postgresql-dev) dependencies
 RUN apk update && \ 
     # postgresql-libs must be installed on the system for psycopg2 
     apk add --no-cache postgresql-libs && \
     # all of these dependencies are only needed during build time for grpcio & psychopg2, hence the --virtual flag and --purge
     apk add --no-cache --virtual .build-deps postgresql-dev gcc g++ linux-headers musl-dev && \
+    pip3 install "cython<3.0.0" && pip install --no-build-isolation pyyaml==6.0 && \
     pip3 install -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
 
