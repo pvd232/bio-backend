@@ -15,8 +15,9 @@ RUN pip3 install -U pip setuptools
 RUN apk update && \ 
     # postgresql-libs must be installed on the system for psycopg2 
     apk add --no-cache postgresql-libs && \
+    apk add -u libffi-dev && \
     # all of these dependencies are only needed during build time for grpcio & psychopg2, hence the --virtual flag and --purge
-    apk add --no-cache --virtual .build-deps postgresql-dev gcc g++ linux-headers musl-dev && \
+    apk add --no-cache --virtual .build-deps postgresql-dev gcc g++ linux-headers musl-dev && \ 
     pip3 install "cython<3.0.0" && pip install --no-build-isolation pyyaml==6.0 && \
     pip3 install -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
