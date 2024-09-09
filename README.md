@@ -15,6 +15,12 @@ The `install -r requirements.txt` command will automatically install the require
 /your/path/to/flask-app/venv/bin/python3 /your/path/to/flask-app/main.py
 ```
 
+If it is your first time running the app (or you want to reset the application), you will need to seed the database. To do this, open a new terminal and run the following command:
+
+```sh
+/your/path/to/flask-app/venv/bin/python3 /your/path/to/flask-app/seed_db.py
+```
+
 Then open http://localhost:4000 with your browser to see the result.
 
 # biov-backend
