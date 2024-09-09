@@ -127,7 +127,6 @@ def post_question_response() -> Response:
         # Commit the session to save to the database
         db.session.commit()
     except Exception as e:
-        print("e", e)
         db.session.rollback()  # Rollback in case of an error
         return jsonify({"error": str(e)}), 500
 
