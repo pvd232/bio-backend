@@ -24,8 +24,6 @@ class Question_Response_Service:
         if len(question_responses) == 0:
             return result
 
-        # For each user, create question response stats dto with user_id, response count and list of questionnaire response dtos
-        # Each questionnaire response dto has a list of associated question response dtos
         prev_q_response_dto = Question_Response_DTO(model=question_responses[0])
 
         for i in range(1, len(question_responses)):

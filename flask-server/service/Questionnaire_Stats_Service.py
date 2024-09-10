@@ -73,7 +73,7 @@ class Questionnaire_Stats_Service:
                     questionnaire_id=curr_q_res.questionnaire_id
                 )
                 prev_q_response_dto = Admin_Question_Response_DTO(model=curr_q_res)
-            # If multi answer and same question then add response
+            # If multi answer and same question then add option
             elif curr_q_res.question_type == "mcq_multi":
                 if curr_q_res.question_id == prev_q_response_dto.question_id:
                     prev_q_response_dto.add_option_text(
@@ -92,4 +92,3 @@ class Questionnaire_Stats_Service:
         prev_response_stats.add_response(prev_qnaire_dto)
         result.append(prev_response_stats)
         return result
-        # add curr question response dto to curr qnnaire dto
