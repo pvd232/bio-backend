@@ -8,8 +8,8 @@ class Question_Response_DTO(Base_DTO):
     def __init__(self, model: Question_Response_Model) -> None:
         self.question_id: int = model.question_id
         self.type: str = model.question_type
-        self.questionnaire_id = model.questionnaire_id
-        self.user_id = model.user_id
+        self.questionnaire_id: int = model.questionnaire_id
+        self.user_id: str = model.user_id
         self.single_option_id: Optional[int] = None
         self.short_answer: Optional[str] = None
         self.multi_option_ids: Optional[list[int]] = None
