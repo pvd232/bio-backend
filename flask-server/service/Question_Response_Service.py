@@ -25,10 +25,10 @@ class Question_Response_Service:
             return result
 
         prev_q_response_dto = Question_Response_DTO(model=question_responses[0])
-
+        #  Gather question response dtos, populating multi-answer questions
         for i in range(1, len(question_responses)):
             curr_q_res = question_responses[i]
-            # If multi answer and same question then add response
+            # If multi answer and same question then add option_id
             if (
                 curr_q_res.question_type == "mcq_multi"
                 and curr_q_res.question_id == prev_q_response_dto.question_id
